@@ -5,3 +5,5 @@
 *.war
 *.ear
 /CloveceNezlobSe/nbproject/private/
+/CloveceNezlobSe/build/
+/CloveceNezlobSe/dist/
