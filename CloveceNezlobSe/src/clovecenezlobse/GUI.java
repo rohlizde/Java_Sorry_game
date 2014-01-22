@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -19,10 +20,16 @@ import static javax.swing.JFrame.EXIT_ON_CLOSE;
 public class GUI extends JFrame{
     private JFrame hlavni_okno;
     private Container kontejner;
+    private Hra hra;
+    private int pocetHracu;
+    private int naRade;
     
+    private boolean odehrano;
+    public Hrac[] hraci;
     public JButton[] tlacitka;
     public JButton[] hernicesta;
     public int[] indexy;
+    Thread vlakno;
     
     private Icon cernaKruh;
     private Icon cervenaKruh;
@@ -35,7 +42,9 @@ public class GUI extends JFrame{
     private Icon zlutaFigurka;
     
     
-    public GUI(){
+    public GUI(Hra hra){
+        this.hraci = new Hrac[5];
+        this.hra = hra;
         nadefinujIkony();
         hlavni_okno = null;
         vytvorHlanvniOkno();
@@ -56,6 +65,8 @@ public class GUI extends JFrame{
         hlavni_okno.setDefaultCloseOperation(EXIT_ON_CLOSE);  //Po zavreni okna se aplikace vypne
         kontejner = hlavni_okno.getContentPane();
         kontejner.setLayout(new GridLayout(13, 13));
+        Menu menu = new Menu(this);
+        hlavni_okno.setJMenuBar(menu.createMenu()); 
     }
     
     private void nastavIndexyDoPole(){
@@ -70,6 +81,7 @@ public class GUI extends JFrame{
             tlacitko.setBorderPainted(false);    
             tlacitko.setEnabled(false);
             tlacitko.setBackground(Color.gray);
+            tlacitko.setName("neutralni");
             tlacitka[i] = tlacitko;
             kontejner.add(tlacitko);
         }
@@ -84,6 +96,31 @@ public class GUI extends JFrame{
             hernicesta[i] = tlacitka[indexy[i]];
         }
         vyresliHrace();
+        nastavAkceTlacitkum();
+    }
+    
+    private void nastavAkceTlacitkum(){
+        int indexy[] = {0, 14, 15, 27, 28, 23, 24, 36, 37, 140, 141, 153, 154, 131, 132, 144, 145};
+        for(int i=0;i<hernicesta.length;i++){
+            if(!(tlacitka[i].getName().equals("neutralni"))){
+                    final JButton tlacitko;
+                    tlacitko = tlacitka[i];
+                    tlacitko.addActionListener( new java.awt.event.ActionListener() {
+                    @Override public void actionPerformed(ActionEvent e) {
+                        GUI.this.krok(tlacitko.getName());
+                    }
+                    } );   
+            }
+        }
+        for(int i=1;i<indexy.length;i++){
+            final JButton tlacitko;
+            tlacitko = tlacitka[indexy[i]];
+            tlacitko.addActionListener( new java.awt.event.ActionListener() {
+            @Override public void actionPerformed(ActionEvent e) {
+                GUI.this.krok(tlacitko.getName());
+            }
+            } );  
+        }
     }
     
     private void vyresliHrace(){
@@ -138,11 +175,6 @@ public class GUI extends JFrame{
             tlacitka[85].setIcon(zelenaKruh); tlacitka[85].setEnabled(true); tlacitka[85].setName("zd4");
      }
     
-    
-    
-    
-    
-    
     private void nadefinujIkony(){
         cernaKruh = new ImageIcon("../images/cerna_kruh.png");
         cervenaKruh = new ImageIcon("../images/cervena_kruh.png");
@@ -154,5 +186,90 @@ public class GUI extends JFrame{
         this.zelenaFigurka = new ImageIcon("../images/zelena_figurka.png");
         this.zlutaFigurka = new ImageIcon("../images/zluta_figurka.png");
     }    
+ 
+    public void setPocetHracu(int pocet){
+        this.pocetHracu = pocet;
+    }
+    
+    public int getPocetHracu(){
+        return this.pocetHracu;
+    }
+    
+    private void vytvorHrace(){
+        for(int i = 0;i<5;i++){
+            hraci[i] = null;
+        }
+        for(int i=1;i<=pocetHracu;i++){
+            hraci[i] = new Hrac((i), this);
+            System.out.println("hrač č."+(i)+" byl vytvořen!");
+        }
+        System.out.println("");
+        System.out.println("");
+        vykresliHrace();
+    }
+    
+    private void vykresliHrace(){
+        for(int i=1;i<=this.pocetHracu;i++){
+            System.out.println("Chci vykreslit hrace c:"+i);
+            for(int j=1;j<5;j++){
+                Figurka figurka = (Figurka) hraci[i].getFigurku(j);
+                tlacitka[figurka.getStartIndex()].setIcon(figurka.getIcon());
+            }
+        }
+    }
+    
+    public void novaHra(){
+        odehrano = false;
+        vykresliHerniCestu();     
+        vytvorHrace();
+        naRade = 1;
+        try{
+            vlakno.interrupt();
+        }catch(NullPointerException e){
+            System.err.print("");
+        }
+        System.out.println("---------------------------------------------");
+        vlakno = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    hraj();
+                } catch (InterruptedException ex) {
+                    System.err.println("vyjimka");
+                }
+            }
+       };vlakno.start();
+    }    
+
+    public synchronized void hraj() throws InterruptedException{
+        while(true){
+            if(odehrano = true){
+                
+                try {
+                    this.wait();
+                    }
+                catch (InterruptedException e) {
+                    System.out.print("");
+                }
+            }
+        }
+    }    
+    
+    public synchronized void krok(String index){
+        boolean status = false;
+        odehrano = true;
+        System.out.println("kliknuto tlacitko:"+index);
+        if(pocetHracu>0){
+            status = true;
+        }
+        if(status == true && pocetHracu>0){
+            System.out.println("KROK");
+            notifyAll();
+        }
+        
+       
+    }    
+    
+    
     
 }

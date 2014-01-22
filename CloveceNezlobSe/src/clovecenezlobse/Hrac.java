@@ -17,11 +17,13 @@ public class Hrac {
    
     
     public Hrac(int cislo_hrace, GUI hra){
+        System.out.println("vytvarim hrace číslo:"+cislo_hrace);
         this.hra = hra;
         String barvy[] = {"cervena", "modra", "zelena", "zluta"}; 
         int startIndex[] = {0, 0, 10, 20, 30};
         int indexy[] = {0, 14, 15, 27, 28, 23, 24, 36, 37, 140, 141, 153, 154, 131, 132, 144, 145};
         figurky = new ArrayList();
+        figurky.add(null);
         for(int i=1;i<5;i++){
             Figurka figurka;
             figurka = new Figurka(indexy[(((cislo_hrace-1)*4)+i)], cislo_hrace, hra);
@@ -47,12 +49,6 @@ public class Hrac {
     }
     
     public Figurka getFigurku(int pozice){
-        for(int i=0;i<4;i++){
-            Figurka figurka = (Figurka) figurky.get(i);
-            if(figurka.getAktualniIndex() == pozice){
-                return figurka;
-            }
-        }
-        return null;
+        return (Figurka) figurky.get(pozice);
     }
 }

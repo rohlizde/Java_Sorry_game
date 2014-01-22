@@ -11,6 +11,6 @@ package clovecenezlobse;
 public class CloveceNezlobSe {
     
     public static void main(String[] args) {
-        GUI uz_rozhrani = new GUI();
+        Hra hra = new Hra();
     }
 }

@@ -20,7 +20,7 @@ public class Figurka {
     public Figurka(int poz, int cislo_hrace, GUI hra){
         this.startindex = poz;
         this.aktualniIndex = poz;
-        this.jmenoPole = this.hra.tlacitka[poz].getName();
+        //this.jmenoPole = this.hra.tlacitka[poz].getName();
         this.usla = -1;
         if(cislo_hrace == 1){
             this.barva = "cervena";
