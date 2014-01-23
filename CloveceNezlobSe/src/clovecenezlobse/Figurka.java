@@ -7,38 +7,22 @@ package clovecenezlobse;
 import javax.swing.*;
 
 public class Figurka {
-    private int aktualniIndex;
-    private String jmenoPole;
-    private int usla;
-    
-    private int startindex;
-    private String barva;
+    private int aktualniIndex; //aktualni policko
+    private String jmenoPole; //jmeno aktualniho policka figurky
+    public int usla = 0; //pocet kroku od startu
+    private int startindex; // startovaci policko figurky
+    private String barva; 
     public Icon ikona;
-    public Icon pikona;
-    private GUI hra;
+    public Icon pikona; //predchozi ikona
     
-    public Figurka(int poz, int cislo_hrace, GUI hra){
-        this.startindex = poz;
-        this.aktualniIndex = poz;
+    public Figurka(int pozice, int cislo_hrace, String jmeno){
+        this.jmenoPole = jmeno;
+        this.startindex = this.aktualniIndex = pozice;
         //this.jmenoPole = this.hra.tlacitka[poz].getName();
-        this.usla = -1;
-        if(cislo_hrace == 1){
-            this.barva = "cervena";
-            this.ikona = new ImageIcon("../images/cervena_figurka.png");
-            this.pikona = new ImageIcon("../images/cervena_kruh.png");
-        }else if(cislo_hrace == 2){
-            this.barva = "modra";
-            this.ikona = new ImageIcon("../images/modra_figurka.png");
-            this.pikona = new ImageIcon("../images/modra_kruh.png");
-        }else if(cislo_hrace == 3){
-            this.barva = "zelena";
-            this.ikona = new ImageIcon("../images/zelena_figurka.png");
-            this.pikona = new ImageIcon("../images/zelena_kruh.png");
-        }else if(cislo_hrace == 4){
-            this.barva = "zluta";
-            this.ikona = new ImageIcon("../images/zluta_figurka.png");
-            this.pikona = new ImageIcon("../images/zluta_kruh.png");
-        }
+        this.usla = -1; //je v domecku
+        this.barva = Const.setBarva(cislo_hrace);
+        this.ikona = new ImageIcon("../images/"+this.barva+"_figurka.png");
+        this.pikona = new ImageIcon("../images/"+this.barva+"_kruh.png");
     }
     
     public int getStartIndex(){
@@ -61,6 +45,12 @@ public class Figurka {
         return this.jmenoPole;
     }
     
+    /**
+     * 
+     * @param novapozice
+     * @param usla
+     * @param jmeno 
+     */
     public void setFigurku(int novapozice, int usla, String jmeno){
         this.aktualniIndex = novapozice;
         this.usla = usla;
